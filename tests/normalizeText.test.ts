@@ -20,7 +20,7 @@ describe("zhlint 中文文案排版規範", () => {
     });
 
     test("°與%例外不加空格", () => {
-        const input = "角度為90°的角，新MacBook Pro有15%的CPU性能提升。";
+        const input = "角度為90°的角，新MacBook Pro有15 %的CPU性能提升。";
         const expected = "角度為 90° 的角，新 MacBook Pro 有 15% 的 CPU 性能提升。";
         expect(normalizeText(input)).toBe(expected);
     });

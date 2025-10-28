@@ -8,5 +8,7 @@ export function fixNumbers(text: string): string {
     // 數字與單位空格：處理 Gbps、TB 等單位，但不處理 % 和 °
     text = text.replace(/(\d)([A-Za-z]{2,})/g, '$1 $2');
 
+    // 特別處理 % 符號：移除數字與 % 之間的空格
+    text = text.replace(/(\d)\s*%/g, '$1%');
     return text;
 }
