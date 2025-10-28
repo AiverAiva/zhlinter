@@ -1,0 +1,37 @@
+{
+  "name": "zhlinter",
+  "version": "1.0.0",
+  "description": "Normalize and clean up Chinese text formatting based on Chinese copywriting guidelines.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "yarn build",
+    "test": "jest"
+  },
+  "keywords": [
+    "chinese",
+    "text",
+    "normalize",
+    "copywriting",
+    "typography",
+    "formatter",
+    "zhlint",
+    "linting"
+  ],
+  "author": "AiverAiva",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AiverAiva/zhlinter.git"
+  }
+}
