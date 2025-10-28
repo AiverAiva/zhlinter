@@ -54,35 +54,9 @@ console.log(normalizeText(text));
 
 ## 🤝 貢獻指南
 
-非常歡迎各種形式的貢獻 💪
 
-你可以：
-
-* 🧩 **調整或優化正則規則（Regex）**，改進文本匹配與修正精度
-* 📚 **補充或更新專有名詞表**（如常見品牌、技術名詞、縮寫對應等）
-* 🔍 **撰寫更多測試案例**（在 `tests/normalizeText.test.ts` 中加入 edge case）
-* 🪶 **改善中英文規則邏輯**（例如標點、單位、數字處理）
-* 🧱 **改善效能或重構代碼結構**
-
-### 🧭 開發步驟
-
-```bash
-git clone https://github.com/AiverAiva/zhlinter.git
-cd zhlinter
-yarn install
-yarn test
-```
-
-修改完後請確保所有測試通過：
-
-```bash
-yarn test
-```
-
-提交 PR 前，請描述：
-
-* 修改的規則與原因
-* 相關的測試案例
+歡迎任何形式的貢獻！  
+請參考 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解詳細說明。
 
 ---
 

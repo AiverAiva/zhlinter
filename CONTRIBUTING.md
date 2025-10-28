@@ -13,7 +13,7 @@
 1. Fork 並 clone 專案：
    ```bash
    git clone https://github.com/AiverAiva/zhlinter.git
-   cd zhlint
+   cd zhlinter
     ```
 
 2. 安裝依賴：
