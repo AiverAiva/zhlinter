@@ -1,4 +1,4 @@
-import { properNouns, abbreviations } from '../maps/';
+import { properNouns, abbreviations } from '../maps/index.js';
 
 /**
  * 專有名詞大小寫校正

@@ -6,6 +6,9 @@ coverage/
 .DS_Store
 lib/
 
+# npm
+*.tgz
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

@@ -4,8 +4,9 @@
   "description": "Normalize and clean up Chinese text formatting based on Chinese copywriting guidelines.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "type": "module",
   "files": [
-    "lib"
+    "lib/**/*"
   ],
   "scripts": {
     "build": "tsc",

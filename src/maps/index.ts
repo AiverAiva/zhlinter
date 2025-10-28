@@ -1,2 +1,2 @@
-export { properNouns } from './properNouns';
-export { abbreviations } from './abbreviations';
+export { properNouns } from './properNouns.js';
+export { abbreviations } from './abbreviations.js';
