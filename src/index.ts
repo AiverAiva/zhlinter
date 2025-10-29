@@ -1,5 +1,5 @@
 import { applySpacing, cleanSpaces } from "./rules/spacing.js";
-import { applyPunctuation } from "./rules/punctuation.js";
+import { applyPunctuation, removeDuplicatePunctuation } from "./rules/punctuation.js";
 import { toFullwidth } from "./rules/fullwidth.js";
 import { normalizeSymbols } from "./rules/symbols.js";
 import { fixNumbers } from "./rules/numbers.js";
@@ -11,6 +11,7 @@ export function normalizeText(text: string): string {
         toFullwidth,
         fixNumbers,
         applyPunctuation,
+        removeDuplicatePunctuation,
         applySpacing,
         normalizeSymbols,
         applyChineseGrammar,
