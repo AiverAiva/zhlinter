@@ -1,40 +1,96 @@
+import { isMostlyEnglish } from "./languageDetection.js";
+
 /**
  * 標點符號處理：中英文混排、全形標點、英文內半形保持
  */
 export function applyPunctuation(text: string): string {
-    // 先處理引號轉換
+    // 第一步：處理引號轉換
     text = text.replace(/"([^"]+)"/g, "「$1」");
 
-    // 將中文句子內的半形標點轉為全形
-    text = text
-        .replace(/([\u4e00-\u9fa5])!/g, "$1！")
-        .replace(/([\u4e00-\u9fa5])\?/g, "$1？")
-        .replace(/([\u4e00-\u9fa5]),/g, "$1，")
-        .replace(/([\u4e00-\u9fa5])\./g, "$1。")
-        // 全局的英文標點轉全形（針對中文環境）
-        .replace(/([\u4e00-\u9fa5])\s*!/g, "$1！")
-        .replace(/([\u4e00-\u9fa5])\s*\?/g, "$1？")
-        // 特別處理句尾的標點
-        .replace(/!$/g, "！")
-        .replace(/\?$/g, "？")
-        // 處理不在中文環境中的標點（如JFGI後面的!）
-        .replace(/([A-Za-z0-9])!$/g, "$1！")
-        .replace(/([A-Za-z0-9])\?$/g, "$1？");
+    // 第二步：處理引號內的內容
+    text = processQuotedText(text);
 
-    // 英文整句使用半形標點（在引號內）
-    text = text.replace(/「([^」]+)」/g, (match, inner) => {
-        const processed = inner
-            .replace(/，/g, ", ")
-            .replace(/。/g, ".")
-            .replace(/！/g, "!")
-            .replace(/？/g, "?")
-            .replace(/,(\S)/g, ", $1") // 確保逗號後有空格
-            .replace(/\s+/g, " ")
-            .trim();
-        return `「${processed}」`;
-    });
+    // 第三步：處理一般的標點轉換
+    text = processGeneralPunctuation(text);
+
+    // 第四步：處理句尾標點
+    text = processSentenceEndings(text);
 
     return text;
+}
+
+/**
+ * 處理引號內的內容
+ */
+function processQuotedText(text: string): string {
+    return text.replace(/「([^」]+)」/g, (match, inner) => {
+        if (isMostlyEnglish(inner)) {
+            // 英文內容：使用半形標點
+            return `「${convertToEnglishPunctuation(inner)}」`;
+        } else {
+            // 中文內容：使用全形標點
+            return `「${convertToChinesePunctuation(inner)}」`;
+        }
+    });
+}
+/**
+ * 處理一般的標點轉換
+ */
+function processGeneralPunctuation(text: string): string {
+    return text
+        // 中文前的英文冒號轉中文冒號
+        .replace(/([\u4e00-\u9fa5])\s*:\s*/g, "$1：")
+        // 中文逗號（移除前後空格）
+        .replace(/\s*,\s*([\u4e00-\u9fa5])/g, "，$1")
+        // 中文句號（排除網址和電子郵件）
+        .replace(/([\u4e00-\u9fa5])\s*\.\s*(?![a-zA-Z0-9])/g, "$1。")
+        // 中文問號（移除前後空格）
+        .replace(/\s*\?\s*([\u4e00-\u9fa5])/g, "？$1")
+        // 中文驚嘆號（移除前後空格）
+        .replace(/\s*!\s*([\u4e00-\u9fa5])/g, "！$1")
+        // 特別處理連續的中文標點之間的空格
+        .replace(/([！？])\s+([\u4e00-\u9fa5])/g, "$1$2")
+        // 特別處理括號後的英文句點（最後的防線）
+        .replace(/([)）])\s*\.(?=\s|$)/g, "$1。");
+}
+/**
+ * 處理句尾標點
+ */
+function processSentenceEndings(text: string): string {
+    return text
+        .replace(/\s*\.\s*$/g, "。")
+        .replace(/\s*\?\s*$/g, "？")
+        .replace(/\s*!\s*$/g, "！");
+}
+
+/**
+ * 將文本轉換為英文標點格式
+ */
+function convertToEnglishPunctuation(text: string): string {
+    return text
+        .replace(/，/g, ", ")
+        .replace(/。/g, ". ")
+        .replace(/！/g, "! ")
+        .replace(/？/g, "? ")
+        .replace(/：/g, ": ")
+        .replace(/；/g, "; ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/,(\S)/g, ", $1")
+        .replace(/([,.!?])\s*$/, "$1");
+}
+
+/**
+ * 將文本轉換為中文標點格式
+ */
+function convertToChinesePunctuation(text: string): string {
+    return text
+        .replace(/,/g, "，")
+        .replace(/\.(?=\s|$|\))/g, "。") // 句尾或括號前的句點
+        .replace(/!/g, "！")
+        .replace(/\?/g, "？")
+        .replace(/:/g, "：")
+        .replace(/;/g, "；");
 }
 
 /**

@@ -1,3 +1,5 @@
+import { isMostlyEnglish } from './languageDetection.js';
+
 /**
  * 全形符號與括號轉換
  */
@@ -6,6 +8,18 @@ export function toFullwidth(text: string): string {
         // 中文前後的 () → （）
         .replace(/([\u4e00-\u9fa5])\(/g, "$1（")
         .replace(/\)([\u4e00-\u9fa5])/g, "）$1")
+        // 特別處理句尾的英文括號和句點組合
+        .replace(/\)\.\s*$/g, "）。")
+        .replace(/\)\.\s*([\u4e00-\u9fa5])/g, "）。$1")
+        // 處理括號內容的語言判斷
+        .replace(/\(([^)]+)\)/g, (match, inner) => {
+            if (isMostlyEnglish(inner)) {
+                // 英文內容：保持半形括號
+                return `(${inner})`;
+            }
+            // 中文內容：轉全形括號
+            return `（${inner}）`;
+        })
         // 在中文環境中將 ? ! 改為全形
         .replace(/([\u4e00-\u9fa5])[?]/g, "$1？")
         .replace(/([\u4e00-\u9fa5])[!]/g, "$1！")

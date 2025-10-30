@@ -92,6 +92,12 @@ describe("zhlinter 中文文案排版規範", () => {
         expect(normalizeText(input)).toBe(expected);
     });
 
+    test("混合全半形同類重複標點處理", () => {
+        const input = "為什麼！!！！!！";
+        const expected = "為什麼！";
+        expect(normalizeText(input)).toBe(expected);
+    });
+
     test("混合全半形重複標點處理", () => {
         const input = "為什麼？!?！!!？?！？!";
         const expected = "為什麼？！";
@@ -107,6 +113,24 @@ describe("zhlinter 中文文案排版規範", () => {
     test("問號優先的混合標點", () => {
         const input = "真的嗎??!!??";
         const expected = "真的嗎？！";
+        expect(normalizeText(input)).toBe(expected);
+    });
+
+    test("中文引用的句子", () => {
+        const input = "富蘭克林說: 「在這個世界上, 沒有什麼是確定的, 除了死亡與繳稅.」";
+        const expected = "富蘭克林說：「在這個世界上，沒有什麼是確定的，除了死亡與繳稅。」";
+        expect(normalizeText(input)).toBe(expected);
+    });
+
+    test("其他測試 #1", () => {
+        const input = "得到超額報酬（investment alpha）難度遠高於合法避稅手段帶來的額外收益（tax alpha). ";
+        const expected = "得到超額報酬（investment alpha）難度遠高於合法避稅手段帶來的額外收益（tax alpha）。";
+        expect(normalizeText(input)).toBe(expected);
+    });
+
+    test("其他測試 #2", () => {
+        const input = "現在是晚上12:30分, 但我還沒吃晚餐.";
+        const expected = "現在是晚上 12:30 分，但我還沒吃晚餐。";
         expect(normalizeText(input)).toBe(expected);
     });
 });
