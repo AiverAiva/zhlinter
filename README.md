@@ -1,7 +1,7 @@
 # zhlinter 
 
 一個用於**中文文字標準化與排版修正**的工具套件，  
-依據 [《中文文案排版指北》](https://github.com/sparanoid/chinese-copywriting-guidelines) 規範自動清理、調整中英文間距、標點與符號。
+依據 [《中文文案排版指北》](https://github.com/sparanoid/chinese-copywriting-guidelines)、[《重訂標點符號手冊》修訂版](/reference/Revised_Handbook_of_Punctuation.pdf) 規範自動清理、調整中英文間距、標點與符號。
 
 ---
 
