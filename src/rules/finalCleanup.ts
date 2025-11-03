@@ -11,5 +11,14 @@ export function finalCleanup(text: string): string {
         .replace(/([^。！？])(\([^）]+）)\./g, "$1$2。")
         // 確保句尾標點正確
         .replace(/\.$/g, "。")
-        .replace(/([^。])\.\s*$/g, "$1。");
+        .replace(/([^。])\.\s*$/g, "$1。")
+        // 最終引號檢查
+        .replace(/「([^」]*)』/g, '「$1」')
+        .replace(/『([^』]*)」/g, '『$1』')
+        // 最終符號檢查
+        .replace(/--/g, '──')          // 確保破折號正確
+        .replace(/\.{3,}/g, '⋯⋯')      // 確保刪節號正確
+        // 清理行內多餘空格
+        .replace(/[ \t]+/g, " ")
+        .trim();
 }

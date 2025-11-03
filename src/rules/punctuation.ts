@@ -4,21 +4,23 @@ import { isMostlyEnglish } from "./languageDetection.js";
  * 標點符號處理：中英文混排、全形標點、英文內半形保持
  */
 export function applyPunctuation(text: string): string {
-    // 第一步：處理引號轉換
+    // 第一步：處理特殊標點（優先處理刪節號）
+    text = processSpecialPunctuation(text);
+
+    // 第二步：處理引號轉換
     text = text.replace(/"([^"]+)"/g, "「$1」");
 
-    // 第二步：處理引號內的內容
+    // 第三步：處理引號內的內容
     text = processQuotedText(text);
 
-    // 第三步：處理一般的標點轉換
+    // 第四步：處理一般的標點轉換
     text = processGeneralPunctuation(text);
 
-    // 第四步：處理句尾標點
+    // 第五步：處理句尾標點
     text = processSentenceEndings(text);
 
     return text;
 }
-
 /**
  * 處理引號內的內容
  */
@@ -28,10 +30,26 @@ function processQuotedText(text: string): string {
             // 英文內容：使用半形標點
             return `「${convertToEnglishPunctuation(inner)}」`;
         } else {
-            // 中文內容：使用全形標點
-            return `「${convertToChinesePunctuation(inner)}」`;
+            // 中文內容：使用全形標點，並處理嵌套引號
+            let processed = convertToChinesePunctuation(inner);
+            // 修復嵌套引號
+            processed = fixNestedQuotes(processed);
+            return `「${processed}」`;
         }
     });
+}
+
+/**
+ * 修復嵌套引號
+ */
+function fixNestedQuotes(text: string): string {
+    return text
+        // 確保嵌套引號正確：外層「」內層『』
+        .replace(/「([^」]*)「([^」]*)」([^」]*)」/g, '「$1『$2』$3」')
+        .replace(/『([^』]*)『([^』]*)』([^』]*)』/g, '『$1「$2」$3』')
+        // 修復不匹配的嵌套
+        .replace(/「([^」]*)』/g, '「$1」')
+        .replace(/『([^』]*)」/g, '『$1』');
 }
 /**
  * 處理一般的標點轉換
@@ -42,17 +60,18 @@ function processGeneralPunctuation(text: string): string {
         .replace(/([\u4e00-\u9fa5])\s*:\s*/g, "$1：")
         // 中文逗號（移除前後空格）
         .replace(/\s*,\s*([\u4e00-\u9fa5])/g, "，$1")
-        // 中文句號（排除網址和電子郵件）
-        .replace(/([\u4e00-\u9fa5])\s*\.\s*(?![a-zA-Z0-9])/g, "$1。")
+        // 中文句號（排除網址和電子郵件，但避開刪節號）
+        .replace(/([\u4e00-\u9fa5])\s*\.\s*(?![a-zA-Z0-9]|\.)/g, "$1。")
         // 中文問號（移除前後空格）
         .replace(/\s*\?\s*([\u4e00-\u9fa5])/g, "？$1")
         // 中文驚嘆號（移除前後空格）
         .replace(/\s*!\s*([\u4e00-\u9fa5])/g, "！$1")
         // 特別處理連續的中文標點之間的空格
         .replace(/([！？])\s+([\u4e00-\u9fa5])/g, "$1$2")
-        // 特別處理括號後的英文句點（最後的防線）
+        // 特別處理括號後的英文句點
         .replace(/([)）])\s*\.(?=\s|$)/g, "$1。");
 }
+
 /**
  * 處理句尾標點
  */
@@ -137,4 +156,21 @@ export function removeDuplicatePunctuation(text: string): string {
                 return match; // 不應該發生，但為了安全
             }
         });
+}
+
+/**
+ * 處理間隔號、分號等特殊標點
+ */
+function processSpecialPunctuation(text: string): string {
+    return text
+        // 間隔號：• 轉 ．
+        .replace(/•/g, '．')
+        // 分號：; 轉 ；
+        .replace(/;/g, '；')
+        // 破折號處理
+        .replace(/--/g, '──')
+        .replace(/—/g, '──')
+        // 刪節號處理（防止在 applyPunctuation 中被轉換為句號）
+        .replace(/\.{3,}/g, '⋯⋯')
+        .replace(/…/g, '⋯⋯');
 }

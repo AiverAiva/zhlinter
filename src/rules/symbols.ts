@@ -1,4 +1,28 @@
 import { isMostlyEnglish } from './languageDetection.js';
+/**
+ * 特殊符號處理：破折號、連接號、刪節號等
+ */
+export function normalizeSpecialSymbols(text: string): string {
+    return text
+        // 破折號處理（使用全形破折號 ──）
+        .replace(/--/g, '──')      // 兩個半形減號轉全形破折號
+        .replace(/——/g, '──')      // 全形連接號轉破折號
+        .replace(/([\u4e00-\u9fa5])-([\u4e00-\u9fa5])/g, '$1──$2') // 中文間的單個減號轉破折號
+
+        // 連接號處理（使用全形連接號 —）
+        .replace(/(\d+:\d+)-(\d+:\d+)/g, '$1—$2') // 時間範圍使用連接號
+        .replace(/(\d+)-(\d+)/g, '$1—$2')         // 數字範圍使用連接號
+
+        // 刪節號處理
+        .replace(/\.{3,}/g, '⋯⋯')  // 三個或更多句點轉刪節號
+        .replace(/。{2,}/g, '⋯⋯')  // 多個句號轉刪節號
+        .replace(/\.\.\./g, '⋯⋯')  // 三個句點轉刪節號
+        .replace(/…/g, '⋯⋯')       // 半形刪節號轉全形
+
+        // 其他特殊符號
+        .replace(/～/g, '～')       // 波浪號保持不變
+        .replace(/〜/g, '～');      // 全角波浪號統一
+}
 
 /**
  * 專門處理括號內的標點問題
@@ -24,8 +48,8 @@ function fixBracketPunctuation(text: string): string {
  * 符號正規化（引號、書名號、特殊符號）
  */
 export function normalizeSymbols(text: string): string {
-    // 第一步：專門處理括號內的標點問題
-    text = fixBracketPunctuation(text);
+    // 第一步：處理特殊符號
+    text = normalizeSpecialSymbols(text);
 
     // 第二步：處理其他符號
     return text
@@ -53,6 +77,9 @@ export function normalizeSymbols(text: string): string {
             }
             return `（${inner}）`;
         })
+
+        // 特別處理括號後的句點
+        .replace(/([)）])\.(?=\s|$)/g, "$1。")
 
         // 清理多餘空格
         .replace(/\s+/g, " ")
